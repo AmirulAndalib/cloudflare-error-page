@@ -26,7 +26,6 @@ db: SQLAlchemy = SQLAlchemy(model_class=Base, session_options={
 
 limiter: Limiter = Limiter(
     key_func=get_remote_address,  # Uses client's IP address by default
-    default_limits=["200 per day", "50 per hour"] # Global default limits
 )
 
 def generate_secret(length=32) -> str:
