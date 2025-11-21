@@ -320,7 +320,10 @@
         let pageHtml = renderEjs(cfg)
         // Write into iframe
         const iframe = $('previewFrame');
-        iframe.srcdoc = pageHtml;
+        let doc = iframe.contentDocument
+        doc.open();
+        doc.write(pageHtml);
+        doc.close();
 
         // store last rendered HTML for "open in new tab"
         lastRenderedHtml = pageHtml;
@@ -413,7 +416,7 @@
           inp.addEventListener('input', debounce(() => {
             // Update status block color classes for quick visual feedback in the editor
             render();
-          }, 1500));
+          }, 200));
           // for radio change events (error_source)
           if (inp.type === 'radio') inp.addEventListener('change', () => { render(); });
         });
@@ -830,7 +833,8 @@
           <h6><strong>Preview</strong></h6>
         </div>
 
-        <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts"></iframe>
+        <!-- TODO: An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing. -->
+        <iframe id="previewFrame" class="preview-frame" sandbox="allow-scripts allow-same-origin"></iframe>
       </div>
 
     </div>
