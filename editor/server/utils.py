@@ -32,18 +32,20 @@ def get_cf_location(loc: str):
 
 
 def fill_cf_template_params(params: dict):
-    # Get real Ray ID / data center location from Cloudflare header
+    # Get the real Ray ID / data center location from Cloudflare header
     ray_id_loc = request.headers.get('Cf-Ray')
     if ray_id_loc:
         params['ray_id'] = ray_id_loc[:16]
 
-        cf_status: dict = params.get('cloudflare_status', {})
+        cf_status: dict = params.get('cloudflare_status')
+        if cf_status is None:
+            cf_status = params['cloudflare_status'] = {}
         if not cf_status.get('location'):
             loc = get_cf_location(ray_id_loc[-3:])
             if loc:
                 cf_status['location'] = loc
 
-    # Get real client ip from remote_addr
+    # Get the real client ip from remote_addr
     # If this server is behind proxies (e.g CF CDN / Nginx), make sure to set 'BEHIND_PROXY'=True in app config. Then ProxyFix will fix this variable
     # using X-Forwarded-For header from the proxy.
     params['client_ip'] = request.remote_addr
